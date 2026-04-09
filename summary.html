@@ -38,6 +38,11 @@
         <hr>
 
         <div class="mb-3">
+            <button class="btn btn-warning" id="push-cart">Push to AutoPOS</button>
+            <span id="push-status" style="margin-left:10px;"></span>
+        </div>
+
+        <div class="mb-3">
             <a class="btn btn-success" href="/index">Back to Order form</a>
         </div>
     </div>
@@ -75,6 +80,21 @@
             }
             return e;
         }
+
+        document.querySelector("#push-cart").addEventListener("click", async () => {
+            const status = document.querySelector("#push-status");
+            status.innerText = "Pushing…";
+            try {
+                const resp = await fetch("/pending-cart", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(orders)
+                });
+                status.innerText = resp.ok ? "Done! Run the bookmarklet on AutoPOS." : `Error: ${resp.status}`;
+            } catch (e) {
+                status.innerText = `Failed: ${e.message}`;
+            }
+        });
 
         document.querySelector("#summary").addEventListener("click", e => {
             let t = e.target;
